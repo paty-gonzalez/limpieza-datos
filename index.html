@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Limpia la base de Bicicleta Blanca</title>
+<meta name="description" content="Laboratorio Parte 1: limpieza y estandarización de la base de datos de Bicicleta Blanca en Excel o Google Sheets.">
+<style>
+  :root {
+    --ink: #1f2a37;
+    --ink-soft: #4a5563;
+    --bg: #ffffff;
+    --teal: #0f6e6b;
+    --teal-2: #2c7a77;
+    --teal-3: #3f8a87;
+    --teal-tint: #e6f2f1;
+    --orange: #a24a12;
+    --orange-tint: #fdf1e6;
+    --orange-line: #e0a272;
+    --ok: #e9f5ea;
+    --warn: #fff4d6;
+    --gray: #f5f7f8;
+    --line: #dddddd;
+    --excel: #1d6f42;
+    --sheets: #1a5fb4;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1, h2, h3, p { margin-top: 0; }
+  strong { font-weight: 700; }
+  ol, ul { padding-left: 24px; margin: 6px 0 14px; }
+  li { margin-bottom: 4px; }
+  li > ul, li > ol { margin-top: 4px; }
+
+  /* Encabezado */
+  .hero { background: var(--ink); color: #fff; border-radius: var(--radius); padding: 22px 24px; margin-bottom: 16px; }
+  .eyebrow { margin: 0 0 4px; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: #9fd8d3; }
+  .hero h1 { font-size: 28px; line-height: 1.2; margin: 0 0 10px; }
+  .hero p:last-child { margin: 0; color: #dfe6ec; }
+  .hero strong { color: #fff; }
+
+  /* Tarjetas */
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .card { border-radius: var(--radius); padding: 16px 20px; }
+  .card ul { margin-bottom: 0; }
+  .card-title { font-weight: 700; margin-bottom: 6px; }
+  .card--teal { background: var(--teal-tint); }
+  .card--teal .card-title { color: var(--teal); }
+  .card--orange { background: var(--orange-tint); }
+  .card--orange .card-title { color: var(--orange); }
+  .filename { overflow-wrap: anywhere; }
+
+  .note { padding: 10px 14px; border-left: 4px solid var(--teal); background: var(--gray); margin-bottom: 20px; }
+  .label { font-weight: 700; margin-bottom: 6px; }
+  .label--teal { color: var(--teal); }
+
+  /* Ruta */
+  .route { list-style: none; padding: 0; margin: 0 0 24px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; text-align: center; font-size: 14px; }
+  .route li { color: #fff; padding: 10px 8px; margin: 0; border-radius: 8px; }
+  .route a { color: #fff; text-decoration: none; display: block; }
+  .route a:hover, .route a:focus { text-decoration: underline; }
+  .route strong { display: block; font-size: 15px; }
+  .r1 { background: var(--teal); } .r2 { background: var(--teal-2); } .r3 { background: var(--teal-3); } .r4 { background: var(--ink); }
+
+  /* Cajas */
+  .box { background: var(--gray); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 20px; }
+  .box p:last-child { margin-bottom: 0; }
+  .tool { border: 2px solid var(--teal-3); border-radius: var(--radius); padding: 14px 18px; margin: 12px 0 20px; }
+  .tool-title { font-size: 18px; font-weight: 700; color: var(--teal); margin-bottom: 8px; }
+  .check { background: var(--ok); border-radius: 8px; padding: 8px 12px; margin: 8px 0 20px; }
+  .warn { background: var(--warn); border-radius: 8px; padding: 8px 12px; margin: 8px 0 14px; }
+  .why { margin: 4px 0 8px; color: var(--ink-soft); }
+  .why em { color: var(--ink); font-style: italic; }
+
+  /* Etiquetas */
+  .tag { display: inline-block; color: #fff; border-radius: 4px; padding: 0 8px; font-size: 13px; font-weight: 700; line-height: 1.6; vertical-align: 1px; white-space: nowrap; }
+  .tag--excel { background: var(--excel); }
+  .tag--sheets { background: var(--sheets); }
+  .pill-ok { background: var(--ok); padding: 1px 6px; border-radius: 4px; white-space: nowrap; }
+
+  /* Partes */
+  .part { color: #fff; padding: 12px 16px; border-radius: 10px; margin: 32px 0 8px; scroll-margin-top: 12px; }
+  .part h2 { margin: 0; font-size: 21px; line-height: 1.3; }
+  .part p { margin: 2px 0 0; font-size: 14px; opacity: .9; }
+  .part--a { background: var(--teal); } .part--b { background: var(--teal-2); } .part--c { background: var(--teal-3); } .part--d { background: var(--ink); }
+  h3 { color: var(--teal); font-size: 19px; line-height: 1.35; margin: 22px 0 6px; }
+  h3 .step { display: block; font-size: 13px; letter-spacing: .5px; text-transform: uppercase; color: var(--ink-soft); font-weight: 700; }
+  h4 { font-size: 16px; margin: 14px 0 4px; }
+
+  /* Tablas */
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 8px 0 16px; }
+  table { border-collapse: collapse; font-size: 15px; }
+  .table-full { width: 100%; }
+  th, td { padding: 7px 14px; text-align: left; vertical-align: top; }
+  thead th { background: var(--ink); color: #fff; }
+  tbody td { border-bottom: 1px solid var(--line); }
+  td.num, th.num { text-align: right; white-space: nowrap; }
+  .nowrap { white-space: nowrap; }
+  .mini thead th { background: var(--teal-tint); color: var(--ink); }
+  .mini td, .mini th { padding: 4px 12px; }
+  .minis { display: flex; flex-wrap: wrap; gap: 16px 24px; margin: 6px 0 14px; }
+
+  /* Entrega */
+  .deliver { background: var(--orange-tint); border: 2px solid var(--orange-line); border-radius: var(--radius); padding: 16px 20px; margin: 28px 0 8px; }
+  .deliver-title { font-size: 18px; font-weight: 700; color: var(--orange); margin-bottom: 8px; }
+  .checklist { list-style: none; padding-left: 0; margin: 0; }
+  .checklist li { padding-left: 28px; position: relative; }
+  .checklist li::before { content: "☐"; position: absolute; left: 4px; top: 0; }
+
+  .top-link { display: inline-block; margin-top: 24px; color: var(--teal); }
+
+  /* Responsive */
+  @media (max-width: 720px) {
+    .cards { grid-template-columns: 1fr; }
+    .route { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    body { font-size: 16px; }
+    .wrap { padding: 16px 12px 40px; }
+    .hero { padding: 18px 16px; }
+    .hero h1 { font-size: 23px; }
+    .card, .box, .tool, .deliver { padding: 14px; }
+    .route { grid-template-columns: 1fr; text-align: left; }
+    .route strong { display: inline; }
+    .route strong::after { content: " · "; font-weight: 400; }
+    .part h2 { font-size: 19px; }
+    h3 { font-size: 18px; }
+    ol, ul { padding-left: 20px; }
+    th, td { padding: 6px 10px; }
+    table { font-size: 14px; }
+    td.nowrap { white-space: normal; }
+  }
+  @media print {
+    .route a { text-decoration: none; }
+    .part, .hero, thead th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .top-link { display: none; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap" id="inicio">
+
+  <header class="hero">
+    <p class="eyebrow">Laboratorio · Parte 1 · Individual</p>
+    <h1>Limpia la base de Bicicleta Blanca</h1>
+    <p>353 personas ciclistas fallecidas en el AMG entre 2009 y 2026. Antes de analizar cualquier dato, hay que limpiarlo: <strong>un nombre mal escrito puede cambiar toda una conclusión.</strong></p>
+  </header>
+
+  <section class="cards" aria-label="Objetivos y entregable">
+    <div class="card card--teal">
+      <p class="card-title">🎯 Al terminar podrás…</p>
+      <ul>
+        <li>Encontrar datos escritos de distintas formas.</li>
+        <li>Estandarizarlos con Buscar y reemplazar.</li>
+        <li>Reconocer huecos disfrazados y duplicados.</li>
+        <li>Comparar los datos antes y después de limpiar.</li>
+      </ul>
+    </div>
+    <div class="card card--orange">
+      <p class="card-title">📦 Vas a entregar</p>
+      <p style="margin-bottom:6px">Un solo archivo: <strong class="filename">Apellido_<wbr>Nombre_<wbr>BiciBlanca.xlsx</strong></p>
+      <ul>
+        <li><strong>Hoja de datos:</strong> la base limpia.</li>
+        <li><strong>Hoja «Preguntas»:</strong> capturas de ANTES y DESPUÉS, 2 gráficas y 4 respuestas.</li>
+      </ul>
+    </div>
+  </section>
+
+  <p class="note"><em>Recuerda: cada fila es una persona.</em></p>
+
+  <p class="label label--teal">🗺️ Tu ruta (≈ 75 min)</p>
+  <ol class="route">
+    <li class="r1"><a href="#parte-a"><strong>A · Prepara</strong>Pasos 1–4 · 10 min</a></li>
+    <li class="r2"><a href="#parte-b"><strong>B · Foto ANTES</strong>Paso 5 · 10 min</a></li>
+    <li class="r3"><a href="#parte-c"><strong>C · Limpia</strong>Pasos 6–10 · 30 min</a></li>
+    <li class="r4"><a href="#parte-d"><strong>D · DESPUÉS y entrega</strong>Pasos 11–13 · 25 min</a></li>
+  </ol>
+
+  <section class="box" aria-label="Cómo leer estas instrucciones">
+    <p class="label">📖 Cómo leer estas instrucciones</p>
+    <p style="margin-bottom:4px">Elige <strong>un</strong> programa y sigue solo sus indicaciones cuando veas estas etiquetas:</p>
+    <p style="margin-bottom:8px"><span class="tag tag--excel">EXCEL</span> <span class="tag tag--sheets">SHEETS</span> &nbsp;Si un paso no tiene etiqueta, es igual en los dos.</p>
+    <p><span class="pill-ok">✔ <strong>Revisa</strong></span> te dice qué debes ver para saber que vas bien. Si no lo ves, no avances: revisa el paso otra vez.</p>
+  </section>
+
+  <p class="label">⌨️ Teclas que vas a usar</p>
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>Para…</th><th>Windows</th><th>Mac</th></tr></thead>
+      <tbody>
+        <tr><td>Copiar</td><td class="nowrap">Ctrl + C</td><td class="nowrap">Cmd + C</td></tr>
+        <tr><td>Pegar</td><td class="nowrap">Ctrl + V</td><td class="nowrap">Cmd + V</td></tr>
+        <tr><td>Buscar</td><td class="nowrap">Ctrl + F</td><td class="nowrap">Cmd + F</td></tr>
+        <tr><td>Captura de pantalla</td><td class="nowrap">Windows + Shift + S</td><td class="nowrap">Cmd + Ctrl + Shift + 4</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:-8px;font-size:14px;color:var(--ink-soft)">La captura se copia sola. Después solo pégala.</p>
+
+  <p class="label" style="margin-top:20px">✅ Así se califica (100 puntos)</p>
+  <div class="table-scroll">
+    <table class="table-full">
+      <thead><tr><th>Qué reviso</th><th>Cómo lo reviso</th><th class="num">Puntos</th></tr></thead>
+      <tbody>
+        <tr><td>Estandarización</td><td>Municipio, Tipo de vialidad, Causa, Tipo de vehículo y BB tienen una sola forma de escribir cada valor.</td><td class="num">35</td></tr>
+        <tr><td>Espacios y huecos</td><td>Las 3 celdas con espacios están corregidas y ya no hay «sin información».</td><td class="num">15</td></tr>
+        <tr><td>Evidencia visual</td><td>Capturas de ANTES y DESPUÉS, gráfica de barras y gráfica de pastel.</td><td class="num">20</td></tr>
+        <tr><td>Respuestas</td><td>Las 4 preguntas contestadas, con números que cuadran con tu base.</td><td class="num">30</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ================= PARTE A ================= -->
+  <section aria-labelledby="parte-a">
+    <div class="part part--a" id="parte-a">
+      <h2>A · Prepara tu archivo</h2>
+      <p>Pasos 1 a 4 · ≈ 10 min · Dejas el archivo listo para trabajar.</p>
+    </div>
+
+    <h3><span class="step">Paso 1 de 13</span>Abre el archivo</h3>
+    <ol>
+      <li>Descarga el archivo <strong>Bici_Blanca_laboratorio.xlsx</strong> de la actividad en Moodle.</li>
+      <li><span class="tag tag--excel">EXCEL</span> Ábrelo con doble clic.</li>
+      <li><span class="tag tag--sheets">SHEETS</span>
+        <ol type="a">
+          <li>Entra a <strong>drive.google.com</strong>.</li>
+          <li>Haz clic en <strong>+ Nuevo › Subir archivo</strong> y elige el archivo.</li>
+          <li>Haz doble clic en el archivo y luego en <strong>Abrir con Hojas de cálculo de Google</strong>.</li>
+          <li>Ve a <strong>Archivo › Guardar como Hojas de cálculo de Google</strong>. Trabaja en esa copia.</li>
+        </ol>
+      </li>
+    </ol>
+    <p class="check">✔ <strong>Revisa:</strong> la última fila con datos es la <strong>354</strong> (353 casos + la fila de títulos).</p>
+
+    <h3><span class="step">Paso 2 de 13</span>Convierte la información en tabla</h3>
+    <p class="why"><em>Para qué:</em> cada título tendrá una flechita para filtrar y ver todos sus valores.</p>
+    <ul>
+      <li><span class="tag tag--excel">EXCEL</span> Haz clic en cualquier celda con datos › <strong>Insertar › Tabla</strong>. Revisa que esté marcada «La tabla tiene encabezados» › <strong>Aceptar</strong>.</li>
+      <li><span class="tag tag--sheets">SHEETS</span> Haz clic en cualquier celda con datos › <strong>Formato › Convertir en tabla</strong>.</li>
+    </ul>
+    <p class="check">✔ <strong>Revisa:</strong> cada título de columna tiene una flechita.</p>
+
+    <h3><span class="step">Paso 3 de 13</span>Borra la columna Nota en periódico</h3>
+    <p class="why"><em>Para qué:</em> son enlaces a noticias y no los vamos a analizar.</p>
+    <p style="margin-bottom:4px">Haz clic derecho sobre cualquier celda de la columna <strong>L</strong> (Nota en periódico):</p>
+    <ul>
+      <li><span class="tag tag--excel">EXCEL</span> <strong>Eliminar › Columnas de la tabla</strong>.</li>
+      <li><span class="tag tag--sheets">SHEETS</span> <strong>Eliminar columna</strong>.</li>
+    </ul>
+    <p class="check">✔ <strong>Revisa:</strong> la última columna con título ahora es la <strong>K</strong> (Tipo de vehículo).</p>
+
+    <h3><span class="step">Paso 4 de 13</span>Corrige 3 celdas con espacios de más</h3>
+    <p class="why"><em>Para qué:</em> estas celdas tienen espacios invisibles al final. Para la computadora, «Avenida» y «Avenida&nbsp;&nbsp;» son dos cosas distintas.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Haz clic en la celda</th><th>Y haz esto</th></tr></thead>
+        <tbody>
+          <tr><td><strong>G30</strong></td><td>Escribe <strong>Avenida</strong> y presiona Enter.</td></tr>
+          <tr><td><strong>J226</strong></td><td>Escribe <strong>Colisión con objeto</strong> y presiona Enter.</td></tr>
+          <tr><td><strong>C219</strong></td><td>Bórrala con la tecla <strong>Suprimir</strong> (en Mac: <strong>fn + Delete</strong>). Debe quedar vacía.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= PARTE B ================= -->
+  <section aria-labelledby="parte-b">
+    <div class="part part--b" id="parte-b">
+      <h2>B · Toma tu foto de ANTES</h2>
+      <p>Paso 5 · ≈ 10 min · Guardas evidencia del desorden para compararla al final.</p>
+    </div>
+
+    <h3><span class="step">Paso 5 de 13</span>Captura el desorden</h3>
+    <p class="warn">⚠️ <strong>Todavía no limpies nada más.</strong> Primero queremos ver los datos como llegaron.</p>
+    <p class="why">La flechita de cada título muestra la lista de todos los valores distintos de esa columna.</p>
+    <ol>
+      <li>Crea una hoja nueva: haz clic en el <strong>+</strong> de abajo, junto al nombre de la hoja. Haz doble clic en su nombre y llámala <strong>Preguntas</strong>.</li>
+      <li>Regresa a la hoja de datos y haz clic en la flechita del título <strong>Municipio</strong>.</li>
+      <li>Toma una captura de la lista que se abre.</li>
+      <li>Cierra la lista sin cambiar nada (tecla <strong>Esc</strong>).</li>
+      <li>En la hoja Preguntas, pega la captura y escribe arriba: <strong>ANTES – Municipio</strong>.</li>
+      <li>Repite con las flechitas de <strong>Tipo de vialidad</strong> y <strong>BB</strong>.</li>
+    </ol>
+    <p class="check">✔ <strong>Revisa:</strong> tienes 3 capturas en la hoja Preguntas. En la de Municipio, cuenta cuántos nombres distintos aparecen: lo usarás en la pregunta 3.</p>
+  </section>
+
+  <!-- ================= PARTE C ================= -->
+  <section aria-labelledby="parte-c">
+    <div class="part part--c" id="parte-c">
+      <h2>C · Limpia los datos</h2>
+      <p>Pasos 6 a 10 · ≈ 30 min · Dejas cada valor escrito de una sola forma.</p>
+    </div>
+
+    <div class="tool" id="buscar-reemplazar">
+      <p class="tool-title">🔧 Tu herramienta: Buscar y reemplazar</p>
+      <p style="margin-bottom:6px">La vas a usar en los pasos 6 a 9. Sigue siempre estos 5 pasos:</p>
+      <ol>
+        <li><strong>Selecciona la columna</strong> que vas a limpiar: haz clic en su letra, arriba de todo.</li>
+        <li><strong>Abre la ventana:</strong>
+          <ul>
+            <li><span class="tag tag--excel">EXCEL</span> <strong>Inicio › Buscar y seleccionar › Reemplazar</strong>. Haz clic en <strong>Opciones &gt;&gt;</strong> para ver las casillas.</li>
+            <li><span class="tag tag--sheets">SHEETS</span> <strong>Editar › Buscar y reemplazar</strong>. En «Buscar en» debe decir «Rango específico» con tu columna.</li>
+          </ul>
+        </li>
+        <li><strong>Escribe:</strong> en «Buscar» el texto mal escrito; en «Reemplazar con» el texto correcto.</li>
+        <li><strong>Marca 2 casillas:</strong>
+          <ul>
+            <li><span class="tag tag--excel">EXCEL</span> «Coincidir mayúsculas y minúsculas» y «Coincidir con el contenido de toda la celda».</li>
+            <li><span class="tag tag--sheets">SHEETS</span> «Coincidir mayúsculas y minúsculas» y «Hacer coincidir todo el contenido de la celda».</li>
+          </ul>
+        </li>
+        <li><strong>Reemplaza:</strong> clic en <strong>Reemplazar todos</strong> (Excel) o <strong>Reemplazar todo</strong> (Sheets).</li>
+      </ol>
+      <p class="warn" style="margin-bottom:0">💡 <strong>¿Dice que reemplazó 0?</strong> Revisa tres cosas: que la columna correcta esté seleccionada, que el texto esté escrito exactamente igual (con mayúsculas y acentos) y que las 2 casillas estén marcadas.</p>
+    </div>
+
+    <h3><span class="step">Paso 6 de 13</span>Estandariza Municipio (columna H)</h3>
+    <p class="why">Usa <a href="#buscar-reemplazar">Buscar y reemplazar</a> una vez por cada renglón:</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Buscar</th><th>Reemplazar con</th></tr></thead>
+        <tbody>
+          <tr><td>Tonala</td><td>Tonalá</td></tr>
+          <tr><td>Zopopan</td><td>Zapopan</td></tr>
+          <tr><td>El salto</td><td>El Salto</td></tr>
+          <tr><td>Tlajomulco</td><td>Tlajomulco de Zúñiga</td></tr>
+          <tr><td>Tlajomulco De Zúñiga</td><td>Tlajomulco de Zúñiga</td></tr>
+          <tr><td>Tlajomunco</td><td>Tlajomulco de Zúñiga</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="check">✔ <strong>Revisa:</strong> abre la flechita de Municipio. Solo deben quedar <strong>8 municipios</strong> (y quizá «Vacías»).</p>
+
+    <h3><span class="step">Paso 7 de 13</span>Estandariza Tipo de vialidad (columna G)</h3>
+    <p class="why">Ahora tú encuentras los errores, igual que en el paso 6.</p>
+    <ol>
+      <li>Abre la flechita de <strong>Tipo de vialidad</strong> y anota las palabras mal escritas o en minúscula.</li>
+      <li>Corrígelas con <a href="#buscar-reemplazar">Buscar y reemplazar</a>.</li>
+    </ol>
+    <p class="check">✔ <strong>Revisa:</strong> en la flechita solo quedan <strong>Avenida, Calle, Carretera y Periferico</strong> (y quizá «Vacías»).</p>
+
+    <h3><span class="step">Paso 8 de 13</span>Estandariza Causa (columna J) y Tipo de vehículo (columna K)</h3>
+    <ol>
+      <li>Abre la flechita de <strong>Causa</strong> y busca los nombres que se repiten con otra escritura.</li>
+      <li>Corrígelos con <a href="#buscar-reemplazar">Buscar y reemplazar</a>.</li>
+      <li>Repite con <strong>Tipo de vehículo</strong>.</li>
+    </ol>
+    <p class="check">✔ <strong>Revisa:</strong> en Causa ya no aparece «Atropellada» (debe ser Atropellado) ni «Colisición». En Tipo de vehículo todo va en minúsculas.</p>
+
+    <h3><span class="step">Paso 9 de 13</span>Estandariza BB y quita los huecos disfrazados</h3>
+    <p class="why"><em>Para qué:</em> un hueco disfrazado es una celda que parece dato, pero en realidad dice «no sabemos». Lo correcto es dejarla vacía.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Columna</th><th>Buscar</th><th>Reemplazar con</th></tr></thead>
+        <tbody>
+          <tr><td>C (BB)</td><td>no</td><td>No</td></tr>
+          <tr><td>C (BB)</td><td>si</td><td>Sí</td></tr>
+          <tr><td>C (BB)</td><td>Si</td><td>Sí</td></tr>
+          <tr><td>C (BB)</td><td>SÍ</td><td>Sí</td></tr>
+          <tr><td>C (BB)</td><td>No *imposible de ubicar</td><td>No</td></tr>
+          <tr><td>E (Rango de edad)</td><td>sin información</td><td><em>(déjalo vacío)</em></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="check">✔ <strong>Revisa:</strong> en la flechita de BB solo quedan <strong>Sí, No y «Vacías»</strong>. En la de Rango de edad ya no aparece «sin información».</p>
+
+    <h3><span class="step">Paso 10 de 13</span>Busca duplicados</h3>
+    <p class="why"><em>Para qué:</em> un duplicado es la misma fila escrita dos veces. Ojo: dos filas parecidas no siempre son un duplicado.</p>
+    <ol>
+      <li>Haz clic en cualquier celda de tu tabla.
+        <ul>
+          <li><span class="tag tag--excel">EXCEL</span> <strong>Datos › Quitar duplicados</strong>. Deja todas las columnas marcadas › <strong>Aceptar</strong>.</li>
+          <li><span class="tag tag--sheets">SHEETS</span> Selecciona de <strong>A1 a K354</strong> › <strong>Datos › Limpieza de datos › Quitar duplicados</strong>. Marca «Los datos tienen una fila de encabezado» y «Seleccionar todo» › <strong>Quitar duplicados</strong>.</li>
+        </ul>
+      </li>
+      <li>Lee el mensaje: dice cuántos duplicados encontró.</li>
+      <li>Con Buscar, encuentra <strong>BB 12.2025</strong> y luego <strong>BB 13.2025</strong>. Lee la columna F (Calle y número) de las dos filas.</li>
+    </ol>
+    <p class="check">✔ <strong>Revisa:</strong> las dos filas se parecen mucho. Léelas con calma: ¿es la misma persona dos veces o son dos personas? Lo contestarás en la pregunta 4.</p>
+  </section>
+
+  <!-- ================= PARTE D ================= -->
+  <section aria-labelledby="parte-d">
+    <div class="part part--d" id="parte-d">
+      <h2>D · Foto de DESPUÉS, gráficas y entrega</h2>
+      <p>Pasos 11 a 13 · ≈ 25 min · Compruebas el cambio y lo cuentas con números.</p>
+    </div>
+
+    <h3><span class="step">Paso 11 de 13</span>Toma tus fotos de DESPUÉS</h3>
+    <ol>
+      <li>Abre otra vez las flechitas de <strong>Municipio</strong>, <strong>Tipo de vialidad</strong> y <strong>BB</strong> y toma una captura de cada lista.</li>
+      <li>Pégalas en la hoja Preguntas, al lado de las de ANTES. Arriba escribe: <strong>DESPUÉS</strong>.</li>
+    </ol>
+
+    <h3><span class="step">Paso 12 de 13</span>Cuenta y haz tus 2 gráficas</h3>
+    <h4>12.1 Cuenta con el filtro</h4>
+    <ol>
+      <li>Abre la flechita de <strong>Municipio</strong>. Quita la palomita de «Seleccionar todo», marca solo <strong>Guadalajara</strong> y haz clic en <strong>Aceptar</strong>.</li>
+      <li>Mira cuántos casos quedaron:
+        <ul>
+          <li><span class="tag tag--excel">EXCEL</span> Abajo a la izquierda dice cuántos registros se encontraron (por ejemplo «X de 353»).</li>
+          <li><span class="tag tag--sheets">SHEETS</span> Haz clic en la letra <strong>H</strong>. Abajo a la derecha aparece «Recuento». Réstale 1 (es el título).</li>
+        </ul>
+      </li>
+      <li>Anota el número y repite con los 8 municipios.</li>
+      <li>Haz lo mismo con <strong>BB</strong>: cuenta los Sí y los No.</li>
+      <li>Al terminar, abre cada flechita y marca «Seleccionar todo» para ver otra vez todos los datos.</li>
+    </ol>
+
+    <h4>12.2 Escribe tus tablitas en la hoja Preguntas</h4>
+    <div class="minis">
+      <table class="mini">
+        <thead><tr><th>Municipio</th><th>Casos</th></tr></thead>
+        <tbody>
+          <tr><td>Guadalajara</td><td><em>tu número</em></td></tr>
+          <tr><td>Zapopan</td><td><em>tu número</em></td></tr>
+          <tr><td>… (los 8)</td><td></td></tr>
+        </tbody>
+      </table>
+      <table class="mini">
+        <thead><tr><th>BB</th><th>Casos</th></tr></thead>
+        <tbody>
+          <tr><td>Sí</td><td><em>tu número</em></td></tr>
+          <tr><td>No</td><td><em>tu número</em></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>12.3 Haz las gráficas</h4>
+    <p class="why">Selecciona cada tablita, con sus títulos, y sigue la ruta de tu programa:</p>
+    <div class="table-scroll">
+      <table class="table-full">
+        <thead><tr><th>Tablita</th><th><span class="tag tag--excel">EXCEL</span></th><th><span class="tag tag--sheets">SHEETS</span></th></tr></thead>
+        <tbody>
+          <tr><td class="nowrap"><strong>Municipio</strong> → barras</td><td>Insertar › ícono de barras › <strong>Barra agrupada</strong></td><td>Insertar › Gráfico › Tipo: <strong>Gráfico de barras</strong></td></tr>
+          <tr><td class="nowrap"><strong>BB</strong> → pastel</td><td>Insertar › ícono circular › <strong>Circular</strong></td><td>Insertar › Gráfico › Tipo: <strong>Gráfico circular</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="check">✔ <strong>Revisa:</strong> la suma de tus 8 municipios debe dar cerca de 353 (puede faltar alguno sin municipio).</p>
+
+    <h3><span class="step">Paso 13 de 13</span>Contesta las preguntas</h3>
+    <p class="why">En la hoja Preguntas, debajo de tus gráficas. Usa tus números, no adivines.</p>
+    <ol>
+      <li>Del total de muertes (353), ¿en cuántos casos BB es Sí y en cuántos No? ¿Cuántos casos quedan sin dato? <em>(Réstale a 353 los Sí y los No).</em></li>
+      <li>¿En qué municipio ha habido la mayor cantidad de muertes? ¿Cuántas?</li>
+      <li>Compara tus capturas de Municipio de ANTES y DESPUÉS: ¿cuántos nombres había antes y cuántos quedaron? ¿Qué error habrías cometido si cuentas los municipios sin limpiar?</li>
+      <li>BB 12.2025 y BB 13.2025, ¿son un duplicado o dos personas? ¿Qué habría pasado si borras una?</li>
+    </ol>
+
+    <div class="deliver">
+      <p class="deliver-title">📤 Para entregar</p>
+      <ol>
+        <li>Guarda tu archivo como Excel:
+          <ul>
+            <li><span class="tag tag--excel">EXCEL</span> <strong>Archivo › Guardar como › Libro de Excel (.xlsx)</strong>.</li>
+            <li><span class="tag tag--sheets">SHEETS</span> <strong>Archivo › Descargar › Microsoft Excel (.xlsx)</strong>.</li>
+          </ul>
+        </li>
+        <li>Cámbiale el nombre a <strong class="filename">Apellido_<wbr>Nombre_<wbr>BiciBlanca.xlsx</strong>.</li>
+        <li>Súbelo a la actividad en Moodle.</li>
+      </ol>
+      <p class="label" style="margin-bottom:4px">Antes de subirlo, revisa que tu archivo tenga:</p>
+      <ul class="checklist">
+        <li>La hoja de datos limpia (sin la columna Nota en periódico)</li>
+        <li>La hoja «Preguntas» con 3 capturas de ANTES y 3 de DESPUÉS</li>
+        <li>La gráfica de barras de Municipio y la gráfica de pastel de BB</li>
+        <li>Las 4 respuestas</li>
+      </ul>
+    </div>
+
+    <a class="top-link" href="#inicio">↑ Volver al inicio</a>
+  </section>
+
+</main>
+</body>
+</html>
